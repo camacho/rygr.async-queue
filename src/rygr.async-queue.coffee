@@ -7,7 +7,7 @@ Distributed under /* @echo LICENSE */ license
 
 Q = require 'q'
 
-module.exports = ->
+module.exports = (args, callbacks, done) ->
   stack = []
   
   isArray = Array.isArray or

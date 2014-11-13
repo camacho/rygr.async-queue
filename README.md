@@ -28,7 +28,7 @@ Async queue takes three arguments:
 
 ### Useage
 ```coffee
-{asyncQueue} = require 'rygr-util'
+asyncQueue = require 'rygr.async-queue'
 
 first = (name, next) ->
   console.log "#{ name }: first!"

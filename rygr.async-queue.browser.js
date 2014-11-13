@@ -12,8 +12,8 @@ https://github.com/camacho/rygr.async-queue
 
   Q = require('q');
 
-  module.exports = function() {
-    var args, baseArity, callback, callbacks, flow, handle, isArray, isFunction, stack, _i, _len;
+  module.exports = function(args, callbacks, done) {
+    var baseArity, callback, flow, handle, isArray, isFunction, stack, _i, _len;
     stack = [];
     isArray = Array.isArray || function(obj) {
       return Object.prototype.toString.call(obj) === '[object Array]';

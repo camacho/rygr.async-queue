@@ -1,6 +1,6 @@
 
 /*
-Rygr Async Queue, v 0.0.2
+Rygr Async Queue, v 0.0.3
 Copyright (c)2014 Patrick Camacho
 Distributed under MIT license
 https://github.com/camacho/rygr.async-queue

@@ -1,0 +1,23 @@
+{
+  "name": "rygr.async-queue",
+  "version": "0.0.1",
+  "main": "rygr.async-queue.browser.js",
+  "description": "Async queue mechanism",
+  "authors": [
+    "Patrick Camacho"
+  ],
+  "keywords": [
+    "async",
+    "async queue",
+    "queue"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "config",
+    "Gulpfile.coffee",
+    "Gulpfile.js"
+  ]
+}

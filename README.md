@@ -1,13 +1,13 @@
 Async Queue
 ------
 ```coffee
-{asyncQueue} = require 'rygr-util'
+asyncQueue = require 'rygr.async-queue'
 ```
 Async queue allows you to assemble a series of asynchronous methods to be run in a sequence. This is inspired by Express' middleware feature.
 
 ### Require
 ```coffee
-{asyncQueue} = require 'rygr.async-queue'
+asyncQueue = require 'rygr.async-queue'
 ```
 
 or, in JavaScript

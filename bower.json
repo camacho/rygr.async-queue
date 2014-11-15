@@ -1,6 +1,6 @@
 {
   "name": "rygr.async-queue",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "main": "rygr.async-queue.browser.js",
   "description": "Async queue mechanism",
   "authors": [

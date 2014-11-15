@@ -16,6 +16,12 @@ or, in JavaScript
 asyncQueue = require('rygr.async-queue')
 ```
 
+### Dependencies
+* For the browser build, async queue depends on `jQuery`
+* For the node build, async queue depends on `q`
+
+These dependency differences are denoted in the `bower.json` and `package.json` files.
+
 ### Arguments
 Async queue takes three arguments:
 

@@ -5,17 +5,9 @@ gulp = require 'gulp'
 $ = require('gulp-load-plugins')()
 
 runSequence = require 'run-sequence'
+fs = require 'fs'
 
 config = dirs: require './config/dirs'
-pjson = require('./package.json')
-
-context =
-  ENV: process.env.NODE_ENV or 'development'
-  VERSION: pjson.version
-  YEAR: new Date().getFullYear()
-  AUTHOR: pjson.author
-  LICENSE: pjson.license
-  REPO: pjson.repository.url
 
 # ------------------------------------------------------------------------------
 # Custom vars and methods
@@ -27,32 +19,45 @@ alertError = $.notify.onError (error) ->
 # ------------------------------------------------------------------------------
 # Compile assets
 # ------------------------------------------------------------------------------
-gulp.task 'compile', ->
-  gulp.src("#{ config.dirs.src }/**/*.coffee")
-    .pipe($.plumber errorHandler: alertError)
-    .pipe($.preprocess context: context)
-    .pipe($.coffeelint optFile: './.coffeelintrc')
-    .pipe($.coffeelint.reporter())
-    .pipe($.coffee bare: false, sourceMap: false)
-    .pipe(gulp.dest config.dirs.dest)
-    .pipe($.browserify())
-    .pipe($.rename (path) ->
-      path.basename += '.browser'
-      undefined
-    )
-    .pipe(gulp.dest config.dirs.dest)
+(->
+  compile = (target) ->
+    ->
+      pjson = JSON.parse fs.readFileSync './package.json'
 
-gulp.task 'minify', ->
-  gulp.src([
-    "#{config.dirs.dest}/rygr.async-queue.js"
-    "#{config.dirs.dest}/rygr.async-queue.browser.js"
-  ])
-    .pipe($.uglify preserveComments: 'all')
-    .pipe($.rename (path) ->
-      path.basename += '.min'
-      undefined
-    )
-    .pipe(gulp.dest config.dirs.dest)
+      context =
+        ENV: process.env.NODE_ENV or 'development'
+        VERSION: pjson.version
+        YEAR: new Date().getFullYear()
+        AUTHOR: pjson.author
+        LICENSE: pjson.license
+        REPO: pjson.repository.url
+
+      context['TARGET'] = target
+
+      gulp.src("#{ config.dirs.src }/**/*.coffee")
+        .pipe($.plumber errorHandler: alertError)
+        .pipe($.preprocess context: context)
+        .pipe($.coffeelint optFile: './.coffeelintrc')
+        .pipe($.coffeelint.reporter())
+        .pipe($.coffee bare: false, sourceMap: false)
+        .pipe($.rename (path) ->
+          path.basename += '.browser' if target is 'browser'
+          undefined
+        )
+        .pipe(gulp.dest config.dirs.dest)
+        .pipe($.uglify preserveComments: 'all')
+        .pipe($.rename (path) ->
+          path.basename += '.min'
+          undefined
+        )
+        .pipe(gulp.dest config.dirs.dest)
+
+  for target in ['browser', 'node']
+    gulp.task "compile:#{ target }", compile target
+
+  gulp.task 'compile', (cb) -> runSequence 'compile:node', 'compile:browser', cb
+)()
+
 
 # ------------------------------------------------------------------------------
 # Build
@@ -75,7 +80,6 @@ gulp.task 'build', (cb) ->
   publish = (type) ->
     (cb) ->
       sequence = [if type then "bump:#{ type }" else 'build']
-      sequence.push 'minify'
       sequence.push ->
         spawn = require('child_process').spawn
         spawn('npm', ['publish'], stdio: 'inherit').on 'close', cb

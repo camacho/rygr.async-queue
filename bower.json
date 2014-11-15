@@ -19,5 +19,8 @@
     "config",
     "Gulpfile.coffee",
     "Gulpfile.js"
-  ]
+  ],
+  "dependencies": {
+    "jquery": "~2.1.1"
+  }
 }

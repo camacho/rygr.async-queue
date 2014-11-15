@@ -5,63 +5,97 @@ Distributed under /* @echo LICENSE */ license
 /* @echo REPO */
 ###
 
-Q = require 'q'
+factory = (PromiseLib) ->
+  unless PromiseLib
+    throw new ReferrenceError 'Promise library is not defined'
+    return
 
-module.exports = (args, callbacks, done) ->
-  stack = []
-  
   isArray = Array.isArray or
   (obj) -> Object::toString.call(obj) is '[object Array]'
-  
+
   isFunction = (obj) -> typeof obj is 'function'
 
-  flow = Q.defer()
-  args = [args] unless isArray args
-  baseArity = args.length + 1
+  (args, callbacks, done) ->
+    stack = []
 
-  unless isArray callbacks
-    if isFunction callbacks
-      callbacks = [callbacks]
-    else
-      throw new Error 'Callbacks must be an array of functions'
+    flow = (PromiseLib.defer or PromiseLib.Deferred)()
+    args = [args] unless isArray args
+    baseArity = args.length + 1
 
-  for callback in callbacks
-    if isFunction callback
-      stack.push {handle: callback}
-    else
-      throw new Error 'Callback is not a function'
+    unless isArray callbacks
+      if isFunction callbacks
+        callbacks = [callbacks]
+      else
+        throw new Error 'Callbacks must be an array of functions'
 
-  handle = ->
-    index = 0
+    for callback in callbacks
+      if isFunction callback
+        stack.push {handle: callback}
+      else
+        throw new Error 'Callback is not a function'
 
-    next = (err) ->
-      return unless Q.isPending flow.promise
+    handle = ->
+      index = 0
 
-      layer = stack[index++]
+      next = (err) ->
+        unless PromiseLib.isPending?(flow.promise) or flow.state() is 'pending'
+          return
 
-      unless layer
-        if err then flow.reject err else flow.resolve()
-        done? err
-        return
+        layer = stack[index++]
 
-      try
-        arity = layer.handle.length
+        unless layer
+          if err then flow.reject err else flow.resolve()
+          done? err
+          return
 
-        if err
-          if arity is baseArity + 1
-            layer.handle.apply undefined, [err].concat args, [next]
+        try
+          arity = layer.handle.length
+
+          if err
+            if arity is baseArity + 1
+              layer.handle.apply undefined, [err].concat args, [next]
+            else
+              next err
+          else if arity < baseArity + 1
+            layer.handle.apply undefined, args.concat [next]
           else
-            next err
-        else if arity < baseArity + 1
-          layer.handle.apply undefined, args.concat [next]
-        else
-          next()
+            next()
 
-      catch e
-        next e
+        catch e
+          next e
 
-    next()
+      next()
 
-  handle()
+    handle()
 
-  flow.promise
+    flow.promise
+
+((root, factory) ->
+  # Set up Rygr.AsyncQueue
+
+  # @if TARGET='browser'
+  PromiseLib = 'jquery'
+  # @endif
+
+  # @if TARGET!='browser'
+  PromiseLib = 'q'
+  # @endif
+
+  # AMD
+  if typeof define is 'function' and define.amd
+    define [PromiseLib], (dep) ->
+      factory dep
+
+  # Node.js/CommonJS
+  else if typeof exports isnt 'undefined'
+    AsyncQueue = factory require PromiseLib
+
+    if typeof module isnt 'undefined' and module.exports
+      module.exports = AsyncQueue
+    else
+      exports.AsyncQueue = AsyncQueue
+
+  # Global
+  else
+    root.AsyncQueue = factory root[PromiseLib]
+)(@, factory)

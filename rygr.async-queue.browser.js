@@ -1,6 +1,6 @@
 
 /*
-Rygr Async Queue, v 1.0.2
+Rygr Async Queue, v 1.1.0
 Copyright (c)2014 Patrick Camacho
 Distributed under MIT license
 https://github.com/camacho/rygr.async-queue
@@ -87,7 +87,7 @@ https://github.com/camacho/rygr.async-queue
         return next();
       };
       handle();
-      return flow.promise;
+      return flow;
     };
   };
 

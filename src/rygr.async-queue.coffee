@@ -68,7 +68,7 @@ factory = (PromiseLib) ->
 
     handle()
 
-    flow.promise
+    flow
 
 ((root, factory) ->
   # Set up Rygr.AsyncQueue

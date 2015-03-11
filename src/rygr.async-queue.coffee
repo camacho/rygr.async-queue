@@ -73,22 +73,14 @@ factory = (PromiseLib) ->
 ((root, factory) ->
   # Set up Rygr.AsyncQueue
 
-  # @if TARGET='browser'
-  PromiseLib = 'jquery'
-  # @endif
-
-  # @if TARGET!='browser'
-  PromiseLib = 'q'
-  # @endif
-
   # AMD
   if typeof define is 'function' and define.amd
-    define [PromiseLib], (dep) ->
+    define ['/* @echo PROMISELIB */'], (dep) ->
       factory dep
 
   # Node.js/CommonJS
   else if typeof exports isnt 'undefined'
-    AsyncQueue = factory require PromiseLib
+    AsyncQueue = factory require '/* @echo PROMISELIB */'
 
     if typeof module isnt 'undefined' and module.exports
       module.exports = AsyncQueue
@@ -97,5 +89,5 @@ factory = (PromiseLib) ->
 
   # Global
   else
-    root.AsyncQueue = factory root[PromiseLib]
+    root.AsyncQueue = factory root./* @echo PROMISELIB */
 )(@, factory)

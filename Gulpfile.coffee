@@ -31,8 +31,7 @@ alertError = $.notify.onError (error) ->
         AUTHOR: pjson.author
         LICENSE: pjson.license
         REPO: pjson.repository.url
-
-      context['TARGET'] = target
+        PROMISELIB: if target is 'browser' then 'jquery' else 'q'
 
       gulp.src("#{ config.dirs.src }/**/*.coffee")
         .pipe($.plumber errorHandler: alertError)

@@ -1,7 +1,7 @@
 
 /*
-Rygr Async Queue, v 1.1.0
-Copyright (c)2014 Patrick Camacho
+Rygr Async Queue, v 1.2.0
+Copyright (c)2015 Patrick Camacho
 Distributed under MIT license
 https://github.com/camacho/rygr.async-queue
  */
@@ -92,21 +92,20 @@ https://github.com/camacho/rygr.async-queue
   };
 
   (function(root, factory) {
-    var AsyncQueue, PromiseLib;
-    PromiseLib = 'q';
+    var AsyncQueue;
     if (typeof define === 'function' && define.amd) {
-      return define([PromiseLib], function(dep) {
+      return define(['q'], function(dep) {
         return factory(dep);
       });
     } else if (typeof exports !== 'undefined') {
-      AsyncQueue = factory(require(PromiseLib));
+      AsyncQueue = factory(require('q'));
       if (typeof module !== 'undefined' && module.exports) {
         return module.exports = AsyncQueue;
       } else {
         return exports.AsyncQueue = AsyncQueue;
       }
     } else {
-      return root.AsyncQueue = factory(root[PromiseLib]);
+      return root.AsyncQueue = factory(root.q);
     }
   })(this, factory);
 
